@@ -152,7 +152,7 @@ data "vsphere_virtual_machine" "RHCOS43" {
 
 Most of the hard work is done for you in the Git repo acommpanying this post but let's examine the contents of it a little. First we need to ensure that you have a system to run all this from, let's call that our `bastion`. In reality, this could be a laptop, VM or other sysytem with open network access to the newly built cluster nodes.
 
-Clone the git repo to the `bastion` and in the root of that repo is a `makefile`. If you are not familiar with `make` for running infrastructure commands think of it somewhat like a bash script that you can jump to specific points of. It's just grouping commands we'd run on the terminal manually. For example, you will need to initialize Terraform in each directory after cloning and install a role from `ansible-galaxy`. To do this execute:
+Clone the git repo to the `bastion` and in the root of that repo is a `makefile`. If you are not familiar with `make` for running infrastructure commands think of it somewhat like a bash script that you can jump to specific points of. It's just grouping commands we'd run on the terminal manually. For example, you will need to initialize Terraform in each directory after cloning this repo, and also install a role from `ansible-galaxy`. To do this execute:
 
 ```
 make init
@@ -160,14 +160,17 @@ make init
 
 This runs all the commands under the `init:` section of the `makefile` for you. You are welcome to run these commands outside of the `makefile` too, it comes down to personal preference.
 
+*Note: you only need to run this when you first clone the repo. It does not need to be done for repeated creation/destroy attempts of the cluster.*
+
 ## Create Load Balancer
 
 This step only applies if you are using the Ansible code in the git repo to configure your load balancer and you can skip to the next section if you already have a working setup. This code makes some assumptions:
 
 * a blank RHEL7 template is availabled to vSphere that Terraform can clone
 * a RHEL subscription is available
+* the ability to reach yum repos to download packages
 
-First we need to subscribe the host. Then we install and configure `httpd` and `haproxy` for our needs. In the root of the git repo there is a makefile which contains all the commands required to build OCP 4.3.
+First we need to subscribe the host and do all relevant updates. Then we install and configure `httpd` and `haproxy` for our needs. In the root of the git repo there is a makefile which contains all the commands required to build OCP 4.3.
 
 ```
 # deploy LB, bootstrap, masters and workers in one command
@@ -179,7 +182,7 @@ $ make create-lb
 
 ## Create install-config.yaml
 
-Now we need to create install-config.yaml, a sample version is provided in the git repo but a better place to find a more up to date version is [docs.openshift.com](https://docs.openshift.com/container-platform/4.3/installing/installing_vsphere/installing-vsphere.html#installation-vsphere-config-yaml_installing-vsphere) as it has full comments and examples.
+Now we need to create `install-config.yaml`, a sample version is provided in the git repo but a better place to find a more up to date version is [docs.openshift.com](https://docs.openshift.com/container-platform/4.3/installing/installing_vsphere/installing-vsphere.html#installation-vsphere-config-yaml_installing-vsphere) as it has full comments and examples.
 
 ## Create manifests and ignition configs
 
@@ -233,7 +236,10 @@ With the manifests created and ignition configs created we are ready to create t
 ```
 # deploy LB, bootstrap, masters and workers in one command
 $ make create-everything
+```
 
+*Or:* if you want to create things by role, rather than all at once:
+```
 # Create bootstrap node
 $ make create-bootstrap
 
@@ -242,9 +248,6 @@ $ make create-masters
 
 # Create worker nodes
 $ make create-workers
-
-# Remove bootstrap once bootstrapping is complete
-$ make destroy-bootstrap
 ```
 
 The nodes will now self-configure and reboot a couple of times. You can safely ignore errors printed to the console of `SELinux: mount invalid`. If needed, we can verify the progress of the bootstrap portion of the installation from the system you are running these terraform commands from:
@@ -263,7 +266,7 @@ INFO Waiting up to 30m0s for bootstrapping to complete...
 
 Additionally we can monitor more progress by SSH'ing to the temporary bootstrap node (as the user `core`) and executing `journalctl -b -f -u bootkube.service`. Full details for debugging the installer can be found [here](https://docs.openshift.com/container-platform/4.3/installing/installing-gather-logs.html).
 
-After 10-20 minutes (depending on the internet speed and hypervisor performance) you will be told `it is now safe to remove bootstrap resources`. This means etcd and the API are up. To remove the bootstrap node, we'll use Terraform.
+After 10-20 minutes (depending on the internet speed and hypervisor performance) you will be told `it is now safe to remove bootstrap resources`. This means etcd and the API are up and running on the masters. To remove the bootstrap node, we'll use Terraform.
 
 ```
 DEBUG Bootstrap status: complete
