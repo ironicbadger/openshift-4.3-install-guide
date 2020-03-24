@@ -137,7 +137,7 @@ Use the `Deploy OVF Template...` option in vSphere to import the OVA image.
 
 Follow the import wizard and customize what is required for your environment. Choose the storage, networks and click Finish. Once the import and deploy tasks have completed you might wish to convert the VM to a template ready for Terraform to clone and deploy. 
 
-![images/f9f818e4bba947d0a6c73241e88817ea.png](images/66f43ff6eece4a4dba741fa280d37c97.png)
+![images/f9f818e4bba947d0a6c73241e88817ea.png](images/f9f818e4bba947d0a6c73241e88817ea.png)
 
 In the Terraform directories for each node type there is a `variables.tf` file which contains the name of the template, `RHCOS43` in this example, which needs customizing to the name given to the template.
 
