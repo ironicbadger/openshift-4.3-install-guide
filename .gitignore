@@ -1,4 +1,5 @@
-
+# for vim swap files
+*.swp
 
 .openshift_install.log
 galaxy_roles/
