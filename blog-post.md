@@ -1,5 +1,3 @@
-Following this blog post https://blog.openshift.com/openshift-4-2-vsphere-install-quickstart/
-
 > Please note this guide is still a work in progress! (03/24)
 
 # Installing OCP 4.3 on VMware with UPI
@@ -325,3 +323,7 @@ $ cd bootstrap-files/
 $ export KUBECONFIG=./auth/kubeconfig
 $ oc get csr -ojson | jq -r '.items[] | select(.status == {} ) | .metadata.name' | xargs oc adm certificate approve
 ```
+
+# Credits
+
+- This blog post https://blog.openshift.com/openshift-4-2-vsphere-install-quickstart/
