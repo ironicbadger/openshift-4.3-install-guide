@@ -1,0 +1,9 @@
+---
+
+- name: remove existing bootstrap files
+
+- name: ensure bootstrap files dir exists
+
+- name: template install-config into cluster install dir
+
+- name: template append-boostrap into cluster install dir

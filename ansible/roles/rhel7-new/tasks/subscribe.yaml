@@ -1,0 +1,50 @@
+---
+
+- name: "Initializing registration status"
+  set_fact:
+    registered: false
+
+- name: "Checking subscription status (a failure means it is not registered and will be)"
+  command: "/usr/bin/subscription-manager status"
+  ignore_errors: yes
+  changed_when: no
+  register: check_if_registered
+
+- name: "Set registration fact if system is already registered"
+  set_fact:
+    registered: true
+  when: check_if_registered.rc == 0
+
+- name: "Cleaning any old subscriptions"
+  command: "/usr/bin/subscription-manager clean"
+  when:
+    - not registered
+  register: cleaningsubs_result
+  until: cleaningsubs_result.rc == 0
+  retries: 10
+  delay: 1
+
+- name: install ktz satellite rpm
+  yum:
+    name: "{{ ktz_sat_url_plain }}/pub/katello-ca-consumer-latest.noarch.rpm"
+    state: present
+
+# - name: subscribe to ktz satellite
+#   redhat_subscription:
+#     state: present
+#     activationkey: "{{ ocp311_activation_key }}"
+#     org_id: "{{ ocp311_org_id }}"
+#   when:
+#     - not registered
+
+- name: "Register to Satellite using activation key"
+  command: "/usr/bin/subscription-manager register --activationkey={{ activation_key }} --org='{{ org_id }}'"
+  when:
+    - not registered
+  register: register_key_result
+  until: register_key_result.rc == 0
+  retries: 10
+  delay: 1
+
+- name: Set release
+  command: "subscription-manager release --set={{ rhel7_release }}"

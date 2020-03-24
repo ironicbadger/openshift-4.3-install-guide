@@ -1,0 +1,24 @@
+---
+
+ktz_sat_url: "satellite.ktz.lan"
+ktz_sat_url_tls: "https://{{ ktz_sat_url }}"
+ktz_sat_url_plain: "http://{{ ktz_sat_url }}"
+
+rhel7_primary_user: root
+
+activation_key: "ocp4"
+rhel7_release: "7Server"
+org_id: "Default_Organization"
+repo_list:
+  - rhel-7-server-rpms                                                                               
+  - rhel-7-server-extras-rpms
+package_list:
+  - wget
+  - git
+  - net-tools
+  - bind-utils
+  - yum-utils
+  - bash-completion
+  - kexec-tools
+  - sos
+  - tmux

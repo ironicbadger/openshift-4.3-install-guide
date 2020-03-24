@@ -1,0 +1,28 @@
+apiVersion: v1
+baseDomain: ktz.lan
+compute:
+- hyperthreading: Enabled
+  name: worker
+  replicas: 2
+controlPlane:
+  hyperthreading: Enabled
+  name: master
+  replicas: 3
+metadata:
+  name: ocp4
+networking:
+  clusterNetworks:
+  - cidr: 10.254.0.0/16
+    hostPrefix: 24
+  networkType: OpenShiftSDN
+  serviceNetwork:
+  - 172.30.0.0/16
+platform:
+  vsphere:
+    vcenter: 192.168.1.240
+    username: adminstrator@ktz.lan
+    password: supersecretpassword
+    datacenter: ktzdc
+    defaultDatastore: mx1tb
+pullSecret: 'add-your-pull-secret-here'
+sshKey: 'add-your-public-ssh-key-here'

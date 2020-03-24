@@ -1,0 +1,7 @@
+---
+
+- name: Set authorized keys taken from url
+  authorized_key:
+    user: "{{ rhel7_primary_user }}"
+    state: present
+    key: https://github.com/IronicBadger.keys

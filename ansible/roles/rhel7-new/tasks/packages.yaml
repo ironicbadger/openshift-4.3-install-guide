@@ -1,0 +1,11 @@
+---
+
+# - name: upgrade all packages
+#   yum:
+#     name: '*'
+#     state: latest
+
+- name: install packages
+  yum:
+    name: "{{ package_list }}"
+    state: present

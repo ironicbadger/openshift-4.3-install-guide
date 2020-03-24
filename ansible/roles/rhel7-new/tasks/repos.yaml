@@ -1,0 +1,10 @@
+---
+
+- name: Disable all RHSM repos (clean slate)
+  rhsm_repository:
+    name: '*'
+    state: disabled
+
+- name: Enabled requested repos
+  rhsm_repository:
+    name: "{{ repo_list }}"

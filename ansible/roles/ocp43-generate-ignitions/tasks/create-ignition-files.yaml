@@ -1,0 +1,9 @@
+---
+
+- name: openshift-install create manifests
+
+- name: ensure masters are set to Schedulable false
+
+- name: openshift-install create ignition-configs
+
+- name: base64 encode ignition files

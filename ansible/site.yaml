@@ -1,0 +1,44 @@
+---
+  - hosts: rhel7-new
+    roles:
+      - role: rhel7-new
+    tasks:
+      - selinux:
+          state: disabled
+        register: selinux
+      - reboot:
+        when: selinux.changed
+
+  - hosts: ocp4-loadbalancer
+    roles:
+      - role: bertvv.httpd
+        httpd_listen: 8080
+        httpd_listen_ssl: 8081
+    tasks:
+      - name: stop and disable firewalld
+        service:
+          name: firewalld
+          state: stopped
+          enabled: no
+      - name: restart and enable httpd
+        service:
+          name: httpd
+          state: restarted
+          enabled: yes
+      - name: install haproxy
+        package:
+          name:
+            - haproxy
+          state: latest
+      - name: install haproxy config
+        copy:
+          src: ocp4-haproxy.cfg
+          dest: /etc/haproxy/haproxy.cfg
+        register: haproxycfg
+      - name: restart and enable haproxy
+        service:
+          name: haproxy
+          state: restarted
+          enabled: yes
+        when: haproxycfg.changed
+
