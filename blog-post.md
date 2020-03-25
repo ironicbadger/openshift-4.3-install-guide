@@ -8,13 +8,13 @@ In this blog post we will cover how to install Openshift 4.3.1 on VMware vSphere
 
 This post was written and tested against ESXi 6.7.0 and vSphere 6.7.0u3. It is important that in addition to reading this blog post that you familiarize yourself with the official [Openshift documentation](https://docs.openshift.com/container-platform/4.3/installing/installing_vsphere/installing-vsphere.html) for installation.
 
-The steps and code associated with this post are recommendations only and are not intended for production use. They are provided as a guide to help you become familiar with OpenShift 4 in a lab environment. The domains, subnets and clusterid used here are for illustration purposes only, and will need to be replaced with something appropriate for your own environment. Here we will use `ktz.lan` for the base domain, `ocp4` for a clusterid, and `192.168.1.0/24` for a subnet. 
+The steps and code associated with this post are recommendations for a dev/test/POC environment only and are not intended for production use. They are provided as a guide to help you become familiar with OpenShift 4 in a lab environment. The domains, subnets and clusterid used here are for illustration purposes only, and will need to be replaced with something appropriate for your own environment. Here we will use `ktz.lan` for the base domain, `ocp4` for a clusterid, and `192.168.1.0/24` for a subnet. 
 
 ## Node Layout
 
 As per the documentation a minimal install of OCP4 requires 1 temporary bootstrap node, 3 master nodes and 2 worker nodes. The bootstrap node will be shortlived and is only required during the install phase to instantiate etcd after which time it can be safely deleted.
 
-You'll also need a node to act as your load balancer and a webserver to serve ignition config files. For your convienence there is an Ansible playbook and Terraform code to configure a node with HAProxy and Apache (running on port 8080) for this purpose in the git repo accompanying this post.
+You'll also need a node to act as your load balancer and a webserver to serve ignition config files. For your convenience there is an Ansible playbook and Terraform code to configure a node with HAProxy and Apache (running on port 8080) for this purpose in the git repo accompanying this post.
 
 Below is a table showing the nodes we need and the IP addresses for each node.
 
@@ -32,7 +32,7 @@ Below is a table showing the nodes we need and the IP addresses for each node.
 
 DNS is extremely important to the success of the OpenShift 4 installer. Pay close attention to the records you create and verify each one before installation, especially the first time.
 
-One of the first things to take into consideration is picking a "cluster id", this post causes This uniquely identifies each OpenShift 4 cluster in your domain and also becomes part of the cluster's FQDN.
+One of the first things to take into consideration is picking a "cluster id" (in this case we are using `ocp4`). Your clusterid uniquely identifies each OpenShift 4 cluster in your domain and also becomes part of the cluster's FQDN.
 
 Using the tool `dig` we can verify our records are as they should be, for example:
 
@@ -49,7 +49,7 @@ master1.ocp4.ktz.lan.
 etcd-0.ocp4.ktz.lan.
 ```
 
-OpenShift 4 expects `api.$CLUSTERDOMAIN` and `api-int.$CLUSTERDOMAIN` to be configured, they can both be set to the same IP address – which will be the IP of the Load Balancer.
+OpenShift 4 expects `api.$CLUSTERID` and `api-int.$CLUSTERID` to be configured, they can both be set to the same IP address – which will be the IP of the Load Balancer.
 
 ```
 $ dig api.ocp4.ktz.lan +short
@@ -109,11 +109,11 @@ resource "vsphere_virtual_machine" "masters" {
 ...
 ```
 
-See how the above snippet uses the length of the list (containing the mac addresses) to determine how many nodes to create? Each mac is then also associated with the iteration of the count function and can thus be assigned to each node one by one avoid lots of unnecessary repetition in the Terraform code.
+See how the above snippet uses the length of the list (containing the mac addresses) to determine how many nodes to create? Each mac is then also associated with the iteration of the count function and can thus be assigned to each node one by one and thus avoids lots of unnecessary repetition in the Terraform code.
 
 ## Load Balancer
 
-In this example we build a RHEL7 node to run HAProxy. Configuration files are in the git repo accompanying this post, the code disables selinux as this is aimed a lab environment only.
+In this example we build a RHEL7 node to run HAProxy. Configuration files are in the git repo accompanying this post, the code disables selinux as this is aimed at a lab environment only.
 
 > Note: If you have selinux turned on, you will need to ensure `setsebool haproxy_connect_any on` is allowed in order for stats to bind to port 1936 with this config. 
 
@@ -150,7 +150,7 @@ data "vsphere_virtual_machine" "RHCOS43" {
 
 ## Install environment setup
 
-Most of the hard work is done for you in the Git repo acommpanying this post but let's examine the contents of it a little. First we need to ensure that you have a system to run all this from, let's call that our `bastion`. In reality, this could be a laptop, VM or other sysytem with open network access to the newly built cluster nodes.
+Most of the hard work is done for you in the Git repo accompanying this post but let's examine the contents of it a little. First we need to ensure that you have a system to run all this from, let's call that our `bastion`. In reality, this could be a laptop, VM or other system with open network access to the newly built cluster nodes.
 
 Clone the git repo to the `bastion` and in the root of that repo is a `makefile`. If you are not familiar with `make` for running infrastructure commands think of it somewhat like a bash script that you can jump to specific points of. It's just grouping commands we'd run on the terminal manually. For example, you will need to initialize Terraform in each directory after cloning this repo, and also install a role from `ansible-galaxy`. To do this execute:
 
@@ -166,11 +166,11 @@ This runs all the commands under the `init:` section of the `makefile` for you. 
 
 This step only applies if you are using the Ansible code in the git repo to configure your load balancer and you can skip to the next section if you already have a working setup. This code makes some assumptions:
 
-* a blank RHEL7 template is availabled to vSphere that Terraform can clone
+* a blank RHEL7 template is available to vSphere that Terraform can clone
 * a RHEL subscription is available
 * the ability to reach yum repos to download packages
 
-First we need to subscribe the host and do all relevant updates. Then we install and configure `httpd` and `haproxy` for our needs. In the root of the git repo there is a makefile which contains all the commands required to build OCP 4.3.
+First we need to subscribe the host using subscription-manager and complete any relevant updates. Then we install and configure `httpd` and `haproxy` for our needs. In the root of the git repo there is a makefile which contains all the commands required to build OCP 4.3.
 
 ```
 # deploy LB, bootstrap, masters and workers in one command
@@ -225,7 +225,7 @@ bootstrap-files/
 └── worker.ign
 ```
 
-Notice that the script has already convienently converted the ignition files to base64 ready for injection into the vApp properties of each node. There is a variable in the Terraform directory for each node type called `<node>_ignition_url` which has been modified automatically by the script. If you experience errors with nodes not igniting correctly this should be the first area you investigate.
+Notice that the script has already conveniently converted the ignition files to base64 ready for injection into the vApp properties of each node. There is a variable in the Terraform directory for each node type called `<node>_ignition_url` which has been modified automatically by the script. If you experience errors with nodes not igniting correctly this should be the first area you investigate.
 
 The one exception here is that the bootstrap node ignition file is too long to fit into the vApp property field and as such we need to create `append-bootstrap.ign` to tell Ignition where to find the *real* ignition config file. This is the entire purpose of the web server running on the load balancer.
 
@@ -243,7 +243,7 @@ $ make create-everything
 # Create bootstrap node
 $ make create-bootstrap
 
-# Wait for boostrap node to boot fully (verify this in the VM console)
+# Wait for bootstrap node to boot fully (verify this in the VM console)
 $ make create-masters
 
 # Create worker nodes
@@ -319,7 +319,7 @@ csr-qkvst   14m   system:node:master1                                           
 csr-rvrl6   14m   system:node:master2                                                         Approved,Issued
 ```
 
-You might need to manually approve any pending CSRs. This can be done with the command below which requires `jq` to be installed on the node. An RPM for `jq` is included in the Git repo for convienence as it requires EPEL which might be tricky for some users to install easily.
+You might need to manually approve any pending CSRs. This can be done with the command below which requires `jq` to be installed on the node. An RPM for `jq` is included in the Git repo for convenience as it requires EPEL which might be tricky for some users to install easily.
 
 ```
 $ cd bootstrap-files/
