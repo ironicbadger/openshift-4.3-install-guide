@@ -8,7 +8,7 @@ In this blog post we will cover how to install Openshift 4.3.1 on VMware vSphere
 
 This post was written and tested against ESXi 6.7.0 and vSphere 6.7.0u3. It is important that in addition to reading this blog post that you familiarize yourself with the official [Openshift documentation](https://docs.openshift.com/container-platform/4.3/installing/installing_vsphere/installing-vsphere.html) for installation.
 
-The steps and code associated with this post are recommendations only and are not intended for production use. They are provided as a guide to help you become familiar with OpenShift 4 in a lab environment.
+The steps and code associated with this post are recommendations only and are not intended for production use. They are provided as a guide to help you become familiar with OpenShift 4 in a lab environment. The domains, subnets and clusterid used here are for illustration purposes only, and will need to be replaced with something appropriate for your own environment. Here we will use `ktz.lan` for the base domain, `ocp4` for a clusterid, and `192.168.1.0/24` for a subnet. 
 
 ## Node Layout
 
@@ -26,7 +26,7 @@ Below is a table showing the nodes we need and the IP addresses for each node.
 | master3      | master3.ocp4.ktz.lan   | 192.168.1.163 | etcd-2.ocp4.ktz.lan |
 | worker1      | worker1.ocp4.ktz.lan   | 192.168.1.164 |                     |
 | worker2      | worker2.ocp4.ktz.lan   | 192.168.1.165 |                     |
-| bootstrap    | bootstrap.ocp4.ktz.lan | 192.168.1.169 |                |
+| bootstrap    | bootstrap.ocp4.ktz.lan | 192.168.1.169 |                     |
 
 ## DNS
 
