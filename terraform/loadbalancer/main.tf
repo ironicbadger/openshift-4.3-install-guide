@@ -13,7 +13,7 @@ resource "vsphere_virtual_machine" "lb" {
     network_id = "${data.vsphere_network.network.id}"
     adapter_type = "${data.vsphere_virtual_machine.rhel7.network_interface_types[0]}"
     use_static_mac = true
-    mac_address = "$var.lb_macs"
+    mac_address = "${var.lb_mac}"
   }
   clone {
     template_uuid = "${data.vsphere_virtual_machine.rhel7.id}"
