@@ -1,7 +1,7 @@
 resource "vsphere_virtual_machine" "masters" {
   name             = "ocp43.master${count.index + 1}"
   resource_pool_id = "${data.vsphere_compute_cluster.cluster.resource_pool_id}"
-  datastore_id     = "${data.vsphere_datastore.mx1tb.id}"
+  datastore_id     = "${data.vsphere_datastore.nvme500.id}"
   folder           = "awesomo/redhat/ocp43"
   count            = length(var.master_macs)
 

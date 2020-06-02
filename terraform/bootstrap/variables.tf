@@ -26,6 +26,11 @@ data "vsphere_virtual_machine" "RHCOS43" {
   datacenter_id = "${data.vsphere_datacenter.dc.id}"
 }
 
+data "vsphere_datastore" "nvme500" {
+  name          = "nvme500"
+  datacenter_id = "${data.vsphere_datacenter.dc.id}"
+}
+
 data "vsphere_network" "network" {
   name          = "VM Network"
   datacenter_id = "${data.vsphere_datacenter.dc.id}"
@@ -39,5 +44,5 @@ variable "bootstrap_mac" {
 
 variable "bootstrap_ignition_url" {
     #base64string
-    default = "ewogICJpZ25pdGlvbiI6IHsKICAgICJjb25maWciOiB7CiAgICAgICJhcHBlbmQiOiBbCiAgICAgICAgewogICAgICAgICAgInNvdXJjZSI6ICJodHRwOi8vMTkyLjE2OC4xLjE2MDo4MDgwL2lnbml0aW9uL2Jvb3RzdHJhcC5pZ24iLAogICAgICAgICAgInZlcmlmaWNhdGlvbiI6IHt9CiAgICAgICAgfQogICAgICBdCiAgICB9LAogICAgInRpbWVvdXRzIjoge30sCiAgICAidmVyc2lvbiI6ICIyLjEuMCIKICB9LAogICJuZXR3b3JrZCI6IHt9LAogICJwYXNzd2QiOiB7fSwKICAic3RvcmFnZSI6IHt9LAogICJzeXN0ZW1kIjoge30KfQ=="
+    default = "ewogICJpZ25pdGlvbiI6IHsKICAgICJjb25maWciOiB7CiAgICAgICJhcHBlbmQiOiBbCiAgICAgICAgewogICAgICAgICAgInNvdXJjZSI6ICJodHRwczovL2t0ei5ueWMzLmRpZ2l0YWxvY2VhbnNwYWNlcy5jb20vYm9vdHN0cmFwLmlnbiIsCiAgICAgICAgICAidmVyaWZpY2F0aW9uIjoge30KICAgICAgICB9CiAgICAgIF0KICAgIH0sCiAgICAidGltZW91dHMiOiB7fSwKICAgICJ2ZXJzaW9uIjogIjIuMS4wIgogIH0sCiAgIm5ldHdvcmtkIjoge30sCiAgInBhc3N3ZCI6IHt9LAogICJzdG9yYWdlIjoge30sCiAgInN5c3RlbWQiOiB7fQp9"
 }
