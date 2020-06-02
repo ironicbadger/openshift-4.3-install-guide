@@ -1,5 +1,3 @@
-> Please note this guide is still a work in progress! (03/24)
-
 # Installing OCP 4.3 on VMware with UPI
 
 In this blog post we will cover how to install Openshift 4.3.1 on VMware vSphere using UPI (User Provisioned Infrastructure). We will use as much automation as we can along the way whilst not abstracting away so much that familiarity with the overall process is impaired.
