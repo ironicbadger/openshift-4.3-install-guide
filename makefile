@@ -12,6 +12,7 @@ create-everything:
 	cd terraform/bootstrap; terraform apply -auto-approve
 	cd terraform/masters; terraform apply -auto-approve
 	cd terraform/workers; terraform apply -auto-approve
+	@echo "Now run make wait-for-bootstrap"
 
 destroy-everything:
 	cd terraform/bootstrap; terraform destroy
@@ -27,12 +28,20 @@ create-cluster:
 	cd terraform/bootstrap; terraform apply -auto-approve
 	cd terraform/masters; terraform apply -auto-approve
 	cd terraform/workers; terraform apply -auto-approve
+	@echo "Now run make wait-for-bootstrap"
 
 destroy-cluster:
 	cd terraform/bootstrap; terraform destroy
 	cd terraform/workers; terraform destroy -auto-approve
 	cd terraform/masters; terraform destroy -auto-approve
 	rm -rf bootstrap-files/
+	
+
+wait-for-bootstrap:
+	cd bootstrap-files; openshift-install wait-for install-complete --log-level debug
+
+wait-for-install:
+	cd bootstrap-files; openshift-install wait-for install-complete --log-level debug
 
 create-lb:
 	cd terraform/loadbalancer; terraform apply
@@ -75,10 +84,4 @@ recreate-workers:
 
 destroy-workers:
 	cd terraform/workers; terraform destroy
-
-wait-for-bootstrap:
-	cd bootstrap-files; openshift-install wait-for install-complete --log-level debug
-
-wait-for-install:
-	cd bootstrap-files; openshift-install wait-for install-complete --log-level debug
 
