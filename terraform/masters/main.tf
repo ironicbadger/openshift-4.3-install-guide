@@ -4,6 +4,7 @@ resource "vsphere_virtual_machine" "masters" {
   datastore_id     = "${data.vsphere_datastore.nvme500.id}"
   folder           = "awesomo/redhat/ocp43"
   count            = length(var.master_macs)
+  enable_disk_uuid = "true"
 
   num_cpus = 4
   memory   = 8192
@@ -30,7 +31,6 @@ resource "vsphere_virtual_machine" "masters" {
     properties = {
     "guestinfo.ignition.config.data"          = "${var.master_ignition_url}"
     "guestinfo.ignition.config.data.encoding" = "base64"
-    "disk.EnableUUID"                         = "TRUE"
     }
   }
 }

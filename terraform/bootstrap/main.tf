@@ -4,6 +4,7 @@ resource "vsphere_virtual_machine" "bootstrap" {
   datastore_id     = "${data.vsphere_datastore.mx1tb.id}"
   folder           = "awesomo/redhat/ocp43"
   count            = 1
+  enable_disk_uuid = "true"
 
   num_cpus = 4
   memory   = 8192
@@ -30,7 +31,6 @@ resource "vsphere_virtual_machine" "bootstrap" {
     properties = {
     "guestinfo.ignition.config.data"          = "${var.bootstrap_ignition_url}"
     "guestinfo.ignition.config.data.encoding" = "base64"
-    "disk.EnableUUID"                         = "TRUE"
     }
   }
 }
