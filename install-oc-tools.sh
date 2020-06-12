@@ -26,6 +26,9 @@ run() {
       show_help
       exit 0
       ;;
+    --update)
+      latest
+      ;;
     *)
       show_help
       exit 0
@@ -39,14 +42,17 @@ version() {
     echo "Example: install-oc-tools --version 4.4.6"
     exit 1
   else
-    VERSION=$(curl -s https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest-$1/release.txt | grep 'Name:' | awk '{print $NF}')
+    VERSION=$(curl -s https://mirror.openshift.com/pub/openshift-v4/clients/ocp/$1/release.txt | grep 'Name:' | awk '{print $NF}')
     CUR_VERSION=$(oc version 2>/dev/null | grep Client | sed -e 's/Client Version: //')
+    if [ "$VERSION" == "$CUR_VERSION" ]; then
+      echo "$VERSION already installed."
+      exit 0
+    fi
     wget -q https://mirror.openshift.com/pub/openshift-v4/clients/ocp/$1/openshift-client-linux.tar.gz -O /tmp/openshift-client-linux.tar.gz
     wget -q  https://mirror.openshift.com/pub/openshift-v4/clients/ocp/$1/openshift-install-linux.tar.gz -O /tmp/openshift-install-linux.tar.gz
   fi
 
 }
-
 
 latest() {
 
@@ -62,6 +68,10 @@ latest() {
   else
     VERSION=$(curl -s https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest-$1/release.txt | grep 'Name:' | awk '{print $NF}')
     CUR_VERSION=$(oc version 2>/dev/null | grep Client | sed -e 's/Client Version: //')
+    if [ "$VERSION" == "$CUR_VERSION" ]; then
+      echo "$VERSION already installed."
+      exit 0
+    fi
     wget -q https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest-$1/openshift-client-linux.tar.gz -O /tmp/openshift-client-linux.tar.gz
     wget -q  https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest-$1/openshift-install-linux.tar.gz -O /tmp/openshift-install-linux.tar.gz
   fi
@@ -71,7 +81,7 @@ latest() {
 fast() {
 
   if [[ "$1" == "" ]]; then
-    VERSION=$(curl -s https://mirror.openshift.com/pub/openshift-v4/clients/ocp/stable/release.txt | grep 'Name:' | awk '{print $NF}')
+    VERSION=$(curl -s https://mirror.openshift.com/pub/openshift-v4/clients/ocp/fast/release.txt | grep 'Name:' | awk '{print $NF}')
     CUR_VERSION=$(oc version 2>/dev/null | grep Client | sed -e 's/Client Version: //')
       if [ "$VERSION" == "$CUR_VERSION" ]; then
         echo "Lastest $VERSION is installed."
@@ -80,8 +90,12 @@ fast() {
     wget -q https://mirror.openshift.com/pub/openshift-v4/clients/ocp/fast/openshift-client-linux.tar.gz -O /tmp/openshift-client-linux.tar.gz
     wget -q  https://mirror.openshift.com/pub/openshift-v4/clients/ocp/fast/openshift-install-linux.tar.gz -O /tmp/openshift-install-linux.tar.gz
   else
-    VERSION=$(curl -s https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest-$1/release.txt | grep 'Name:' | awk '{print $NF}')
+    VERSION=$(curl -s https://mirror.openshift.com/pub/openshift-v4/clients/ocp/fast-$1/release.txt | grep 'Name:' | awk '{print $NF}')
     CUR_VERSION=$(oc version 2>/dev/null | grep Client | sed -e 's/Client Version: //')
+    if [ "$VERSION" == "$CUR_VERSION" ]; then
+      echo "$VERSION already installed."
+      exit 0
+    fi
     wget -q https://mirror.openshift.com/pub/openshift-v4/clients/ocp/fast-$1/openshift-client-linux.tar.gz -O /tmp/openshift-client-linux.tar.gz
     wget -q  https://mirror.openshift.com/pub/openshift-v4/clients/ocp/fast-$1/openshift-install-linux.tar.gz -O /tmp/openshift-install-linux.tar.gz
   fi
@@ -100,8 +114,12 @@ stable() {
     wget -q https://mirror.openshift.com/pub/openshift-v4/clients/ocp/stable/openshift-client-linux.tar.gz -O /tmp/openshift-client-linux.tar.gz
     wget -q  https://mirror.openshift.com/pub/openshift-v4/clients/ocp/stable/openshift-install-linux.tar.gz -O /tmp/openshift-install-linux.tar.gz
   else
-    VERSION=$(curl -s https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest-$1/release.txt | grep 'Name:' | awk '{print $NF}')
+    VERSION=$(curl -s https://mirror.openshift.com/pub/openshift-v4/clients/ocp/stable-$1/release.txt | grep 'Name:' | awk '{print $NF}')
     CUR_VERSION=$(oc version 2>/dev/null | grep Client | sed -e 's/Client Version: //')
+    if [ "$VERSION" == "$CUR_VERSION" ]; then
+      echo "$VERSION already installed."
+      exit 0
+    fi
     wget -q https://mirror.openshift.com/pub/openshift-v4/clients/ocp/stable-$1/openshift-client-linux.tar.gz -O /tmp/openshift-client-linux.tar.gz
     wget -q  https://mirror.openshift.com/pub/openshift-v4/clients/ocp/stable-$1/openshift-install-linux.tar.gz -O /tmp/openshift-install-linux.tar.gz
   fi
@@ -110,14 +128,30 @@ stable() {
 
 nightly() {
 
-  VERSION=$(curl -s http://mirror.openshift.com/pub/openshift-v4/clients/ocp-dev-preview/latest/release.txt | grep 'Name:' | awk '{print $NF}')
-
-  wget -q http://mirror.openshift.com/pub/openshift-v4/clients/ocp-dev-preview/latest/openshift-client-linux-$VERSION.tar.gz -O /tmp/openshift-client-linux.tar.gz
-  wget -q http://mirror.openshift.com/pub/openshift-v4/clients/ocp-dev-preview/latest/openshift-install-linux-$VERSION.tar.gz -O /tmp/openshift-install-linux.tar.gz
+  if [[ "$1" == "" ]]; then
+    VERSION=$(curl -s http://mirror.openshift.com/pub/openshift-v4/clients/ocp-dev-preview/latest/release.txt | grep 'Name:' | awk '{print $NF}')
+    CUR_VERSION=$(oc version 2>/dev/null | grep Client | sed -e 's/Client Version: //')
+      if [ "$VERSION" == "$CUR_VERSION" ]; then
+        echo "Lastest $VERSION is installed."
+        exit 0
+      fi
+      wget -q http://mirror.openshift.com/pub/openshift-v4/clients/ocp-dev-preview/latest/openshift-client-linux.tar.gz -O /tmp/openshift-client-linux.tar.gz
+      wget -q http://mirror.openshift.com/pub/openshift-v4/clients/ocp-dev-preview/latest/openshift-install-linux.tar.gz -O /tmp/openshift-install-linux.tar.gz
+  else
+    VERSION=$(curl -s http://mirror.openshift.com/pub/openshift-v4/clients/ocp-dev-preview/latest-$1/release.txt | grep 'Name:' | awk '{print $NF}')
+    CUR_VERSION=$(oc version 2>/dev/null | grep Client | sed -e 's/Client Version: //')
+    if [ "$VERSION" == "$CUR_VERSION" ]; then
+      echo "$VERSION already installed."
+      exit 0
+    fi
+    wget -q http://mirror.openshift.com/pub/openshift-v4/clients/ocp-dev-preview/latest-$1/openshift-client-linux.tar.gz -O /tmp/openshift-client-linux.tar.gz
+    wget -q http://mirror.openshift.com/pub/openshift-v4/clients/ocp-dev-preview/latest-$1/openshift-install-linux.tar.gz -O /tmp/openshift-install-linux.tar.gz
+  fi
 
 }
 
 backup() {
+
   if [[ -f "/usr/local/bin/oc" ]] && [[ -f "/usr/local/bin/openshift-install" ]] && [[ -f "/usr/local/bin/kubectl" ]]
   then
       for i in openshift-install oc kubectl; do mv "$(which $i)" /usr/local/bin/"$i"."$CUR_VERSION".bak; done
@@ -136,10 +170,24 @@ cleanup() {
 }
 
 remove_old_ver() {
-  rm -rf /usr/local/bin/oc.*
-  rm -rf /usr/local/bin/kubectl.*
-  rm -rf /usr/local/bin/openshift-install.*
-  exit 0
+
+  read -p "Delete the following files?
+$(echo -e "\n")
+$(for i in oc kubectl openshift-install; do ls -1 /usr/local/bin/$i*bak 2>/dev/null; done)
+$(echo -e "\nY/N? ")"
+
+  if [[ $REPLY =~ ^[Yy]$ ]]
+  then
+    for i in oc kubectl openshift-install; do rm -f /usr/local/bin/$i*bak 2>/dev/null; done
+    exit 0
+  elif [[ $REPLY =~ ^[Nn]$ ]]
+  then
+    exit 0
+  else
+    echo "Invalid response."
+    exit 1
+  fi
+
 }
 
 show_ver() {
@@ -163,28 +211,32 @@ show_ver() {
 }
 
 show_help() {
-    echo "USAGE: install-oc-cli
-install-oc-cli is a small script that will download the latest, stable, fast, nightly,
+    echo "USAGE: install-oc-tools
+install-oc-tools is a small script that will download the latest, stable, fast, nightly,
 or specified version of the oc command line tools, kubectl, and openshift-install.
 If a previous version of the tools are installed it will make a backup of the file.
 
 Options:
-  --latest: Installs the latest specified version. If no version is specified then it
-            downloads the latest stable version of the oc tools.
+  --latest:  Installs the latest specified version. If no version is specified then it
+             downloads the latest stable version of the oc tools.
     Example: install-oc-tools --latest 4.4
-  --fast: Installs the latest fast version. If no version is specified then it downloads
-          the latest fast version.
+  --update:  Same as --latest
+  --fast:    Installs the latest fast version. If no version is specified then it downloads
+             the latest fast version.
     Example: install-oc-tools --fast 4.4
-  --stable: Installs the latest stable version. If no version is specified then it
-            downloads the latest stable version of the oc tools.
+  --stable:  Installs the latest stable version. If no version is specified then it
+             downloads the latest stable version of the oc tools.
     Example: install-oc-tools --stable 4.4
   --version: Installs the specific version.  If no version is specified then it
-            downloads the latest stable version of the oc tools.
+             downloads the latest stable version of the oc tools.
     Example: install-oc-tools --version 4.4.6
-  --nightly: Installs the latest nightly version
+  --nightly: Installs the latest nightly version. If you do not specify a version it will grab
+             the latest version.
+    Example: install-oc-tools --nightly 4.4
+             install-oc-tools --nightly
   --cleanup: This deleted all backed up version of oc, kubectl, and openshift-install
     Example: install-oc-tools --cleanup
-  --help: Shows this help message"
+  --help:    Shows this help message"
 }
 
 main() {
