@@ -20,6 +20,20 @@ destroy-everything:
 	cd terraform/loadbalancer; terraform destroy -auto-approve
 	rm -rf bootstrap-files/
 
+create-cluster:
+	cd terraform/loadbalancer; terraform apply
+	cd ansible; ansible-playbook -u root -i hosts.ini site.yaml
+	./generate-manifests.sh
+	cd terraform/bootstrap; terraform apply -auto-approve
+	cd terraform/masters; terraform apply -auto-approve
+	cd terraform/workers; terraform apply -auto-approve
+
+destroy-cluster:
+	cd terraform/bootstrap; terraform destroy
+	cd terraform/workers; terraform destroy -auto-approve
+	cd terraform/masters; terraform destroy -auto-approve
+	rm -rf bootstrap-files/
+
 create-lb:
 	cd terraform/loadbalancer; terraform apply
 	cd ansible; ansible-playbook -u root -i hosts.ini site.yaml
