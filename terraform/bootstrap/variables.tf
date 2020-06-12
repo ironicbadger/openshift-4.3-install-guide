@@ -1,18 +1,18 @@
 provider "vsphere" {
-  user           = "administrator@ktz.lan"
-  password       = "supersecretpassword"
-  vsphere_server = "192.168.1.240"
+  user           = yamldecode(file("~/.config/ocp/vsphere.yaml"))["vsphere-user"]
+  password       = yamldecode(file("~/.config/ocp/vsphere.yaml"))["vsphere-password"]
+  vsphere_server = yamldecode(file("~/.config/ocp/vsphere.yaml"))["vsphere-server"]
 
   # If you have a self-signed cert
   allow_unverified_ssl = true
 }
 
 data "vsphere_datacenter" "dc" {
-  name = "ktzdc"
+  name = yamldecode(file("~/.config/ocp/vsphere.yaml"))["vsphere-dc"]
 }
 
 data "vsphere_compute_cluster" "cluster" {
-  name          = "ktzcluster"
+  name          = yamldecode(file("~/.config/ocp/vsphere.yaml"))["vsphere-cluster"]
   datacenter_id = "${data.vsphere_datacenter.dc.id}"
 }
 
@@ -44,5 +44,5 @@ variable "bootstrap_mac" {
 
 variable "bootstrap_ignition_url" {
     #base64string
-    default = "ewogICJpZ25pdGlvbiI6IHsKICAgICJjb25maWciOiB7CiAgICAgICJhcHBlbmQiOiBbCiAgICAgICAgewogICAgICAgICAgInNvdXJjZSI6ICJodHRwczovL2t0ei5ueWMzLmRpZ2l0YWxvY2VhbnNwYWNlcy5jb20vYm9vdHN0cmFwLmlnbiIsCiAgICAgICAgICAidmVyaWZpY2F0aW9uIjoge30KICAgICAgICB9CiAgICAgIF0KICAgIH0sCiAgICAidGltZW91dHMiOiB7fSwKICAgICJ2ZXJzaW9uIjogIjIuMS4wIgogIH0sCiAgIm5ldHdvcmtkIjoge30sCiAgInBhc3N3ZCI6IHt9LAogICJzdG9yYWdlIjoge30sCiAgInN5c3RlbWQiOiB7fQp9"
+    default = "ewogICJpZ25pdGlvbiI6IHsKICAgICJjb25maWciOiB7CiAgICAgICJhcHBlbmQiOiBbCiAgICAgICAgewogICAgICAgICAgInNvdXJjZSI6ICJodHRwOi8vMTkyLjE2OC4xLjE2MDo4MDgwL2lnbml0aW9uL2Jvb3RzdHJhcC5pZ24iLAogICAgICAgICAgInZlcmlmaWNhdGlvbiI6IHt9CiAgICAgICAgfQogICAgICBdCiAgICB9LAogICAgInRpbWVvdXRzIjoge30sCiAgICAidmVyc2lvbiI6ICIyLjEuMCIKICB9LAogICJuZXR3b3JrZCI6IHt9LAogICJwYXNzd2QiOiB7fSwKICAic3RvcmFnZSI6IHt9LAogICJzeXN0ZW1kIjoge30KfQ=="
 }

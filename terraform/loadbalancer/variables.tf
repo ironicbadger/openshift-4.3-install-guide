@@ -1,18 +1,18 @@
 provider "vsphere" {
-  user           = "administrator@ktz.lan"
-  password       = "supersecretpassword"
-  vsphere_server = "192.168.1.240"
+  user           = yamldecode(file("~/.config/ocp/vsphere.yaml"))["vsphere-user"]
+  password       = yamldecode(file("~/.config/ocp/vsphere.yaml"))["vsphere-password"]
+  vsphere_server = yamldecode(file("~/.config/ocp/vsphere.yaml"))["vsphere-server"]
 
   # If you have a self-signed cert
   allow_unverified_ssl = true
 }
 
 data "vsphere_datacenter" "dc" {
-  name = "ktzdc"
+  name = yamldecode(file("~/.config/ocp/vsphere.yaml"))["vsphere-dc"]
 }
 
 data "vsphere_compute_cluster" "cluster" {
-  name          = "ktzcluster"
+  name          = yamldecode(file("~/.config/ocp/vsphere.yaml"))["vsphere-cluster"]
   datacenter_id = "${data.vsphere_datacenter.dc.id}"
 }
 

@@ -1,0 +1,10 @@
+---
+# https://blog.ktz.me/store-terraform-secrets-in-yaml-files-with-yamldecode/
+# Store secrets here and keep them out of version control or for bonus points
+# encrypt this file with Ansible vault.
+
+vsphere-user: administrator@ktz.lan
+vsphere-password: "supersecretpassword"
+vsphere-server: 192.168.1.240
+vsphere-dc: ktzdc
+vsphere-cluster: ktzcluster
