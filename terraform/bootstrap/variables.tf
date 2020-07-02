@@ -21,8 +21,8 @@ data "vsphere_datastore" "mx1tb" {
   datacenter_id = "${data.vsphere_datacenter.dc.id}"
 }
 
-data "vsphere_virtual_machine" "RHCOS43" {
-  name          = "RHCOS43"
+data "vsphere_virtual_machine" "RHCOS" {
+  name          = "rhcos-4.4.3"
   datacenter_id = "${data.vsphere_datacenter.dc.id}"
 }
 

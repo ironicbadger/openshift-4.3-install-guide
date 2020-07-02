@@ -1,18 +1,18 @@
 resource "vsphere_virtual_machine" "masters" {
-  name             = "ocp43.master${count.index + 1}"
+  name             = "ocp44.master${count.index + 1}"
   resource_pool_id = "${data.vsphere_compute_cluster.cluster.resource_pool_id}"
   datastore_id     = "${data.vsphere_datastore.nvme500.id}"
-  folder           = "awesomo/redhat/ocp43"
+  folder           = "awesomo/redhat/ocp44"
   count            = length(var.master_macs)
   enable_disk_uuid = "true"
 
   num_cpus = 4
   memory   = 8192
-  guest_id = "${data.vsphere_virtual_machine.RHCOS43.guest_id}"
+  guest_id = "${data.vsphere_virtual_machine.RHCOS.guest_id}"
 
   network_interface {
     network_id   = "${data.vsphere_network.network.id}"
-    adapter_type = "${data.vsphere_virtual_machine.RHCOS43.network_interface_types[0]}"
+    adapter_type = "${data.vsphere_virtual_machine.RHCOS.network_interface_types[0]}"
     use_static_mac = true
     mac_address = "${var.master_macs[count.index]}"
   }
@@ -20,11 +20,11 @@ resource "vsphere_virtual_machine" "masters" {
   disk {
     label            = "disk0"
     size             = "40"
-    thin_provisioned = "${data.vsphere_virtual_machine.RHCOS43.disks.0.thin_provisioned}"
+    thin_provisioned = "${data.vsphere_virtual_machine.RHCOS.disks.0.thin_provisioned}"
   }
 
   clone {
-    template_uuid = "${data.vsphere_virtual_machine.RHCOS43.id}"
+    template_uuid = "${data.vsphere_virtual_machine.RHCOS.id}"
   }
 
   vapp {

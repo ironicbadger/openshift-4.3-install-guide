@@ -1,8 +1,8 @@
 resource "vsphere_virtual_machine" "lb" {
-  name             = "ocp43.lb"
+  name             = "ocp44.lb"
   resource_pool_id = "${data.vsphere_compute_cluster.cluster.resource_pool_id}"
   datastore_id     = "${data.vsphere_datastore.mx1tb.id}"
-  folder           = "awesomo/redhat/ocp43"
+  folder           = "awesomo/redhat/ocp44"
   count            = 1
   
   num_cpus = 2
@@ -19,7 +19,7 @@ resource "vsphere_virtual_machine" "lb" {
     template_uuid = "${data.vsphere_virtual_machine.rhel7.id}"
     customize {
       linux_options{
-        host_name = "ocp43-lb"
+        host_name = "ocp44-lb"
         domain = "ktz.lan"
       }
       network_interface {}
