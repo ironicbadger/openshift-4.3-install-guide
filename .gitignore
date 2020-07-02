@@ -1,5 +1,4 @@
 bootstrap-files/
-install-config.yaml
 
 # for vim swap files
 *.swp
@@ -113,3 +112,4 @@ $RECYCLE.BIN/
 *.lnk
 
 # End of https://www.gitignore.io/api/linux,macos,ansible,windows,terraform
+install-config.yaml
